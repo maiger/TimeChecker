@@ -1,0 +1,130 @@
+// Käyttäjä syöttää kahden kellonajan tunnit sekä minuutit.
+// Ohjelma tulostaa aloitusajan ja aikojen välisen eron.
+
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+class Time {
+	public:
+		void read(char prompt[25]);
+		int lessThan(Time t2);
+		Time subtract(Time t2);
+		void display();
+		int timeToMinutes();	// kivempi käsitellä aikoja minuutteina
+
+		//Tarkistaa, että annetut ajat eivät ole mahdottomia tai esim kirjaimia
+		void testValidTime(Time test);
+
+	private:
+		int hour = 0;
+		int min = 0;
+};
+
+int main() {
+	Time time1, time2, duration;
+
+	time1.read("Enter time 1");
+	time1.testValidTime(time1);
+	time2.read("Enter time 2");
+	time2.testValidTime(time2);
+
+	if (time1.lessThan(time2)) {
+		duration = time2.subtract(time1);
+		cout << "Starting time was ";
+		time1.display();
+	}
+	else {
+		duration = time1.subtract(time2);
+		cout << "Starting time was ";
+		time2.display();
+	}
+
+	cout << "Duration was ";
+	duration.display();
+	duration.testValidTime(duration);
+	
+	return 0;
+}
+
+int Time::timeToMinutes() {
+	int totMins = this->hour * 60 + this->min;
+	return totMins;
+}
+void Time::read(char prompt[25]) {
+	cout << prompt << "\nHours: ";
+	do {	// Ovatko tunnit hyväksyttäviä arvoja
+		cin >> hour;
+		if (!cin) {		// Tarkistaa ettei syötetty !int
+			cout << "Enter a number: ";
+		}
+		else if (hour < 0 || hour > 24) {
+			cout << "Enter valid value: ";
+		}
+		// Putsataan input bufferi
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+	} while (hour < 0 || hour > 24);
+
+	cout << "Minutes: ";
+	do {	// Ovatko minuutit hyväksyttäviä arvoja
+		cin >> min;
+		if (!cin) {
+			cout << "Enter a number: ";
+		}
+		else if (min < 0 || min > 60) {
+			cout << "Enter valid value: ";
+		}
+		// Putsataan input bufferi
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+	} while (min < 0 || min > 60);
+}
+
+int Time::lessThan(Time t2) {
+	int x;
+	if (this->timeToMinutes() - t2.timeToMinutes() > 0) {
+		x = 1;
+	}
+	else {
+		x = 0;
+	}
+	return x;
+}
+
+Time Time::subtract(Time t2) {
+	int x;
+	Time aux;
+	x = abs(this->timeToMinutes() - t2.timeToMinutes());
+	aux.hour = x % 60 - x % 60;
+	aux.min = x % 60;
+	return aux;
+}
+
+void Time::display() {
+	cout << hour << ":";
+	if (min < 10) {
+		cout << "0" << min << endl;
+	}
+	else {
+		cout << min << endl;
+	}
+}
+
+//Test case implementation
+void Time::testValidTime(Time test) {
+
+	if (hour < 0 || hour > 24) {
+		cout << "Error! Invalid hour given: " << hour << endl;
+	}
+	else {
+		cout << "Hours OK! ";
+	}
+
+	if (min < 0 || min > 60) {
+		cout << "Error! Invalid minutes given: " << min << endl;
+	}
+	else {
+		cout << "Minutes OK!" << endl;
+	}
+}
